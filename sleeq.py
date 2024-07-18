@@ -1,13 +1,6 @@
-import glob
-import math
-import pickle
-
 import cv2
 import numpy as np
-import scipy as sp
-import scipy.ndimage
-from matplotlib import pyplot as plt
-from scipy import signal, special
+from scipy import special
 
 
 class sleeqQA:

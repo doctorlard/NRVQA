@@ -9,7 +9,6 @@ import torch
 from torchvision import transforms
 import skvideo.io
 from PIL import Image
-import numpy as np
 from VSFA import VSFA
 from CNNfeatures import get_features
 from argparse import ArgumentParser

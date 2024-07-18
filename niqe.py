@@ -8,7 +8,6 @@ import scipy.io
 import scipy.misc
 import scipy.ndimage
 import scipy.special
-from PIL import Image
 
 gamma_range = np.arange(0.2, 10, 0.001)
 a = scipy.special.gamma(2.0 / gamma_range)

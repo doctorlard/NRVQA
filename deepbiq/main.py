@@ -8,9 +8,10 @@ import torch.nn.parallel
 import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
-import torchvision.datasets as datasets
-from comm_model import *
-from dataset_split import *
+from torchvision import datasets, transforms
+
+from comm_model import get_alexnet_pretrain_model, get_imagenet_normalize
+from dataset_split import DataSetSplit
 
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
