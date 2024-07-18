@@ -16,10 +16,10 @@ from argparse import ArgumentParser
 import h5py
 import numpy as np
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from scipy import stats
 from tensorboardX import SummaryWriter
+from torch import nn
 from torch.optim import Adam, lr_scheduler
 from torch.utils.data import Dataset
 

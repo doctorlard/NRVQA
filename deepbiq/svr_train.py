@@ -1,5 +1,6 @@
 import os
 
+import joblib
 import numpy as np
 import scipy.io as sio
 import torch.nn.parallel
@@ -8,7 +9,6 @@ import torch.utils.data
 from comm_model import FeatureMode, get_crop_box, get_imagenet_normalize
 from PIL import Image
 from sklearn import preprocessing
-from sklearn.externals import joblib
 from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn.svm import SVR
 from torchvision import transforms

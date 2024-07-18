@@ -2,13 +2,13 @@ import argparse
 import warnings
 
 import cv2
+import joblib
 import numpy as np
 import torch.nn.parallel
 import torch.optim
 import torch.utils.data
 from comm_model import FeatureMode, get_crop_box, get_imagenet_normalize
 from sklearn import preprocessing
-from sklearn.externals import joblib
 from torchvision import transforms
 
 svr_save_path = './trained_models/svr_mode.pkl'

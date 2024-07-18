@@ -5,6 +5,7 @@
 # Email: dingquanli AT pku DOT edu DOT cn
 # Date: 2018/3/27
 #
+import os
 import time
 from argparse import ArgumentParser
 
@@ -28,6 +29,8 @@ if __name__ == "__main__":
         '--frame_batch_size', type=int, default=32, help='frame batch size for feature extraction (default: 32)'
     )
     args = parser.parse_args()
+
+    assert os.path.exists(args.video_path), f'File not found: "{args.video_path}"'
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 

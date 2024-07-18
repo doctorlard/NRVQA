@@ -16,8 +16,8 @@ import h5py
 import numpy as np
 import skvideo.io
 import torch
-import torch.nn as nn
 from PIL import Image
+from torch import nn
 from torch.utils.data import Dataset
 from torchvision import models, transforms
 
