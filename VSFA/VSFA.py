@@ -87,7 +87,7 @@ class VSFA(nn.Module):
         q = self.q(outputs)  # frame quality
         score = torch.zeros_like(input_length, device=q.device)  #
         for i in range(input_length.shape[0]):  #
-            qi = q[i, : np.int(input_length[i].numpy())]
+            qi = q[i, : np.int32(input_length[i].numpy())]
             qi = TP(qi)
             score[i] = torch.mean(qi)  # video overall quality
         return score
