@@ -56,15 +56,6 @@ def aggd_features(imdata):
     return (alpha, N, bl, br, left_mean_sqrt, right_mean_sqrt)
 
 
-def ggd_features(imdata):
-    nr_gam = 1/prec_gammas
-    sigma_sq = np.var(imdata)
-    E = np.mean(np.abs(imdata))
-    rho = sigma_sq/E**2
-    pos = np.argmin(np.abs(nr_gam - rho))
-    return gamma_range[pos], sigma_sq
-
-
 def paired_product(new_im):
     shift1 = np.roll(new_im.copy(), 1, axis=1)
     shift2 = np.roll(new_im.copy(), 1, axis=0)
