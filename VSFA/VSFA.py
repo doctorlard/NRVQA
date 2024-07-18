@@ -8,19 +8,20 @@
 # tensorboard --logdir=logs --port=6006
 # CUDA_VISIBLE_DEVICES=1 python VSFA.py --database=KoNViD-1k --exp_id=0
 
-from argparse import ArgumentParser
+import datetime
 import os
+import random
+from argparse import ArgumentParser
+
 import h5py
+import numpy as np
 import torch
-from torch.optim import Adam, lr_scheduler
 import torch.nn as nn
 import torch.nn.functional as F
-from torch.utils.data import Dataset
-import numpy as np
-import random
 from scipy import stats
 from tensorboardX import SummaryWriter
-import datetime
+from torch.optim import Adam, lr_scheduler
+from torch.utils.data import Dataset
 
 
 class VQADataset(Dataset):

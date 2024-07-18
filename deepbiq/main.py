@@ -3,16 +3,14 @@ import os
 import shutil
 import time
 
+import torch.backends.cudnn as cudnn
 import torch.nn as nn
 import torch.nn.parallel
-import torch.backends.cudnn as cudnn
 import torch.optim
 import torch.utils.data
-from torchvision import datasets, transforms
-
 from comm_model import get_alexnet_pretrain_model, get_imagenet_normalize
 from dataset_split import DataSetSplit
-
+from torchvision import datasets, transforms
 
 parser = argparse.ArgumentParser(description='PyTorch ImageNet Training')
 parser.add_argument('data', metavar='DIR', help='path to dataset')

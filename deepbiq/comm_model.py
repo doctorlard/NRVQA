@@ -1,11 +1,11 @@
+import numpy as np
 import torch
+import torch.backends.cudnn as cudnn
 import torch.nn as nn
 import torch.nn.parallel
 import torchvision.models as models
-from torchvision.models.alexnet import model_urls
 import torchvision.transforms as transforms
-import numpy as np
-import torch.backends.cudnn as cudnn
+from torchvision.models.alexnet import model_urls
 
 
 def weight_init(m):

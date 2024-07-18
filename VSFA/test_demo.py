@@ -5,15 +5,16 @@
 # Email: dingquanli AT pku DOT edu DOT cn
 # Date: 2018/3/27
 #
-import torch
-from torchvision import transforms
-import skvideo.io
-from PIL import Image
-from VSFA import VSFA
-from CNNfeatures import get_features
-from argparse import ArgumentParser
 import time
+from argparse import ArgumentParser
 
+import skvideo.io
+import torch
+from CNNfeatures import get_features
+from PIL import Image
+from torchvision import transforms
+
+from VSFA import VSFA
 
 if __name__ == "__main__":
     parser = ArgumentParser(description='"Test Demo of VSFA')

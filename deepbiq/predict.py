@@ -6,11 +6,10 @@ import numpy as np
 import torch.nn.parallel
 import torch.optim
 import torch.utils.data
+from comm_model import FeatureMode, get_crop_box, get_imagenet_normalize
 from sklearn import preprocessing
 from sklearn.externals import joblib
 from torchvision import transforms
-
-from comm_model import FeatureMode, get_crop_box, get_imagenet_normalize
 
 svr_save_path = './trained_models/svr_mode.pkl'
 svr_process_path = './trained_models/svr_process.pkl'

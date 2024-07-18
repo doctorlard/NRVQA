@@ -5,15 +5,13 @@ import scipy.io as sio
 import torch.nn.parallel
 import torch.optim
 import torch.utils.data
+from comm_model import FeatureMode, get_crop_box, get_imagenet_normalize
 from PIL import Image
-from sklearn.svm import SVR
 from sklearn import preprocessing
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import GridSearchCV
 from sklearn.externals import joblib
+from sklearn.model_selection import GridSearchCV, train_test_split
+from sklearn.svm import SVR
 from torchvision import transforms
-
-from comm_model import get_crop_box, get_imagenet_normalize, FeatureMode
 
 svr_save_path = './svr_mode.pkl'
 svr_process_path = './svr_process.pkl'

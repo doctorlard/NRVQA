@@ -4,7 +4,6 @@ import tensorflow as tf
 from imquality import datasets
 from utils import gaussian_filter, image_shape, rescale
 
-
 builder = datasets.LiveIQA(data_dir="./LIVE/")
 builder.download_and_prepare(download_dir="./LIVE/")
 

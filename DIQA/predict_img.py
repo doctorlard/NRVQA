@@ -3,7 +3,6 @@ import warnings
 
 import cv2
 import numpy as np
-
 import tensorflow as tf
 from utils import gaussian_filter, image_shape, rescale
 
