@@ -60,15 +60,17 @@ class LiveIQA(tfds.core.GeneratorBasedBuilder):
         return tfds.core.DatasetInfo(
             builder=self,
             description=DESCRIPTION,
-            features=tfds.features.FeaturesDict({
-                "distortion": tfds.features.Text(),
-                "index": tf.int32,
-                "distorted_image": tfds.features.Image(),
-                "reference_image": tfds.features.Image(),
-                "dmos": tf.float32,
-                "dmos_realigned": tf.float32,
-                "dmos_realigned_std": tf.float32,
-            }),
+            features=tfds.features.FeaturesDict(
+                {
+                    "distortion": tfds.features.Text(),
+                    "index": tf.int32,
+                    "distorted_image": tfds.features.Image(),
+                    "reference_image": tfds.features.Image(),
+                    "dmos": tf.float32,
+                    "dmos_realigned": tf.float32,
+                    "dmos_realigned_std": tf.float32,
+                }
+            ),
             supervised_keys=SUPERVISED_KEYS,
             urls=URLS,
             citation=CITATION,
@@ -85,10 +87,7 @@ class LiveIQA(tfds.core.GeneratorBasedBuilder):
         return [
             tfds.core.SplitGenerator(
                 name=tfds.Split.TRAIN,
-                gen_kwargs={
-                    "images_path": images_path,
-                    "labels": os.path.join(images_path, "dmos.csv")
-                },
+                gen_kwargs={"images_path": images_path, "labels": os.path.join(images_path, "dmos.csv")},
             )
         ]
 

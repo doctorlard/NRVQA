@@ -1,4 +1,5 @@
 """Quality Assessment of In-the-Wild Videos, ACM MM 2019"""
+
 #
 # Author: Dingquan Li
 # Email: dingquanli AT pku DOT edu DOT cn
@@ -31,7 +32,7 @@ class VQADataset(Dataset):
         for i in range(len(index)):
             features = np.load(features_dir + str(index[i]) + '_resnet-50_res5c.npy')
             self.length[i] = features.shape[0]
-            self.features[i, :features.shape[0], :] = features
+            self.features[i, : features.shape[0], :] = features
             self.mos[i] = np.load(features_dir + str(index[i]) + '_score.npy')  #
         self.scale = scale  #
         self.label = self.mos / self.scale  # label normalization
@@ -54,7 +55,7 @@ class ANN(nn.Module):
 
     def forward(self, input):
         input = self.fc0(input)  # linear
-        for i in range(self.n_ANNlayers-1):  # nonlinear
+        for i in range(self.n_ANNlayers - 1):  # nonlinear
             input = self.fc(self.dropout(F.relu(input)))
         return input
 
@@ -62,7 +63,7 @@ class ANN(nn.Module):
 def TP(q, tau=12, beta=0.5):
     """subjectively-inspired temporal pooling"""
     q = torch.unsqueeze(torch.t(q), 0)
-    qm = -float('inf')*torch.ones((1, 1, tau-1)).to(q.device)
+    qm = -float('inf') * torch.ones((1, 1, tau - 1)).to(q.device)
     qp = 10000.0 * torch.ones((1, 1, tau - 1)).to(q.device)  #
     l = -F.max_pool1d(torch.cat((qm, -q), 2), tau, stride=1)
     m = F.avg_pool1d(torch.cat((q * torch.exp(-q), qp * torch.exp(-qp)), 2), tau, stride=1)
@@ -86,7 +87,7 @@ class VSFA(nn.Module):
         q = self.q(outputs)  # frame quality
         score = torch.zeros_like(input_length, device=q.device)  #
         for i in range(input_length.shape[0]):  #
-            qi = q[i, :np.int(input_length[i].numpy())]
+            qi = q[i, : np.int(input_length[i].numpy())]
             qi = TP(qi)
             score[i] = torch.mean(qi)  # video overall quality
         return score
@@ -99,38 +100,27 @@ class VSFA(nn.Module):
 if __name__ == "__main__":
     parser = ArgumentParser(description='"VSFA: Quality Assessment of In-the-Wild Videos')
     parser.add_argument("--seed", type=int, default=19920517)
-    parser.add_argument('--lr', type=float, default=0.00001,
-                        help='learning rate (default: 0.00001)')
-    parser.add_argument('--batch_size', type=int, default=16,
-                        help='input batch size for training (default: 16)')
-    parser.add_argument('--epochs', type=int, default=2000,
-                        help='number of epochs to train (default: 2000)')
+    parser.add_argument('--lr', type=float, default=0.00001, help='learning rate (default: 0.00001)')
+    parser.add_argument('--batch_size', type=int, default=16, help='input batch size for training (default: 16)')
+    parser.add_argument('--epochs', type=int, default=2000, help='number of epochs to train (default: 2000)')
 
-    parser.add_argument('--database', default='CVD2014', type=str,
-                        help='database name (default: CVD2014)')
-    parser.add_argument('--model', default='VSFA', type=str,
-                        help='model name (default: VSFA)')
-    parser.add_argument('--exp_id', default=0, type=int,
-                        help='exp id for train-val-test splits (default: 0)')
-    parser.add_argument('--test_ratio', type=float, default=0.2,
-                        help='test ratio (default: 0.2)')
-    parser.add_argument('--val_ratio', type=float, default=0.2,
-                        help='val ratio (default: 0.2)')
+    parser.add_argument('--database', default='CVD2014', type=str, help='database name (default: CVD2014)')
+    parser.add_argument('--model', default='VSFA', type=str, help='model name (default: VSFA)')
+    parser.add_argument('--exp_id', default=0, type=int, help='exp id for train-val-test splits (default: 0)')
+    parser.add_argument('--test_ratio', type=float, default=0.2, help='test ratio (default: 0.2)')
+    parser.add_argument('--val_ratio', type=float, default=0.2, help='val ratio (default: 0.2)')
 
-    parser.add_argument('--weight_decay', type=float, default=0.0,
-                        help='weight decay (default: 0.0)')
+    parser.add_argument('--weight_decay', type=float, default=0.0, help='weight decay (default: 0.0)')
 
-    parser.add_argument("--notest_during_training", action='store_true',
-                        help='flag whether to test during training')
-    parser.add_argument("--disable_visualization", action='store_true',
-                        help='flag whether to enable TensorBoard visualization')
-    parser.add_argument("--log_dir", type=str, default="logs",
-                        help="log directory for Tensorboard log output")
-    parser.add_argument('--disable_gpu', action='store_true',
-                        help='flag whether to disable GPU')
+    parser.add_argument("--notest_during_training", action='store_true', help='flag whether to test during training')
+    parser.add_argument(
+        "--disable_visualization", action='store_true', help='flag whether to enable TensorBoard visualization'
+    )
+    parser.add_argument("--log_dir", type=str, default="logs", help="log directory for Tensorboard log output")
+    parser.add_argument('--disable_gpu', action='store_true', help='flag whether to disable GPU')
     args = parser.parse_args()
 
-    args.decay_interval = int(args.epochs/10)
+    args.decay_interval = int(args.epochs / 10)
     args.decay_ratio = 0.8
 
     torch.manual_seed(args.seed)  #
@@ -162,13 +152,15 @@ if __name__ == "__main__":
     index = index[:, args.exp_id % index.shape[1]]  # np.random.permutation(N)
     ref_ids = Info['ref_ids'][0, :]  #
     max_len = int(Info['max_len'][0])
-    trainindex = index[0:int(np.ceil((1 - args.test_ratio - args.val_ratio) * len(index)))]
-    testindex = index[int(np.ceil((1 - args.test_ratio) * len(index))):len(index)]
+    trainindex = index[0 : int(np.ceil((1 - args.test_ratio - args.val_ratio) * len(index)))]
+    testindex = index[int(np.ceil((1 - args.test_ratio) * len(index))) : len(index)]
     train_index, val_index, test_index = [], [], []
     for i in range(len(ref_ids)):
-        train_index.append(i) if (ref_ids[i] in trainindex) else \
-            test_index.append(i) if (ref_ids[i] in testindex) else \
-                val_index.append(i)
+        (
+            train_index.append(i)
+            if (ref_ids[i] in trainindex)
+            else test_index.append(i) if (ref_ids[i] in testindex) else val_index.append(i)
+        )
 
     scale = Info['scores'][0, :].max()  # label normalization factor
     train_dataset = VQADataset(features_dir, train_index, max_len, scale=scale)
@@ -189,10 +181,18 @@ if __name__ == "__main__":
     save_result_file = 'results/{}-{}-EXP{}'.format(args.model, args.database, args.exp_id)
 
     if not args.disable_visualization:  # Tensorboard Visualization
-        writer = SummaryWriter(log_dir='{}/EXP{}-{}-{}-{}-{}-{}-{}'
-                               .format(args.log_dir, args.exp_id, args.database, args.model,
-                                       args.lr, args.batch_size, args.epochs,
-                                       datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")))
+        writer = SummaryWriter(
+            log_dir='{}/EXP{}-{}-{}-{}-{}-{}-{}'.format(
+                args.log_dir,
+                args.exp_id,
+                args.database,
+                args.model,
+                args.lr,
+                args.batch_size,
+                args.epochs,
+                datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y"),
+            )
+        )
 
     criterion = nn.L1Loss()  # L1 loss
     optimizer = Adam(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
@@ -230,7 +230,7 @@ if __name__ == "__main__":
         val_loss = L / (i + 1)
         val_PLCC = stats.pearsonr(y_pred, y_val)[0]
         val_SROCC = stats.spearmanr(y_pred, y_val)[0]
-        val_RMSE = np.sqrt(((y_pred-y_val) ** 2).mean())
+        val_RMSE = np.sqrt(((y_pred - y_val) ** 2).mean())
         val_KROCC = stats.stats.kendalltau(y_pred, y_val)[0]
 
         # Test
@@ -250,7 +250,7 @@ if __name__ == "__main__":
             test_loss = L / (i + 1)
             PLCC = stats.pearsonr(y_pred, y_test)[0]
             SROCC = stats.spearmanr(y_pred, y_test)[0]
-            RMSE = np.sqrt(((y_pred-y_test) ** 2).mean())
+            RMSE = np.sqrt(((y_pred - y_test) ** 2).mean())
             KROCC = stats.stats.kendalltau(y_pred, y_test)[0]
 
         if not args.disable_visualization:  # record training curves
@@ -270,11 +270,17 @@ if __name__ == "__main__":
         # Update the model with the best val_SROCC
         if val_SROCC > best_val_criterion:
             print("EXP ID={}: Update best model using best_val_criterion in epoch {}".format(args.exp_id, epoch))
-            print("Val results: val loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}"
-                  .format(val_loss, val_SROCC, val_KROCC, val_PLCC, val_RMSE))
+            print(
+                "Val results: val loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}".format(
+                    val_loss, val_SROCC, val_KROCC, val_PLCC, val_RMSE
+                )
+            )
             if args.test_ratio > 0 and not args.notest_during_training:
-                print("Test results: test loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}"
-                      .format(test_loss, SROCC, KROCC, PLCC, RMSE))
+                print(
+                    "Test results: test loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}".format(
+                        test_loss, SROCC, KROCC, PLCC, RMSE
+                    )
+                )
                 np.save(save_result_file, (y_pred, y_test, test_loss, SROCC, KROCC, PLCC, RMSE, test_index))
             torch.save(model.state_dict(), trained_model_file)
             best_val_criterion = val_SROCC  # update best val SROCC
@@ -298,8 +304,11 @@ if __name__ == "__main__":
         test_loss = L / (i + 1)
         PLCC = stats.pearsonr(y_pred, y_test)[0]
         SROCC = stats.spearmanr(y_pred, y_test)[0]
-        RMSE = np.sqrt(((y_pred-y_test) ** 2).mean())
+        RMSE = np.sqrt(((y_pred - y_test) ** 2).mean())
         KROCC = stats.stats.kendalltau(y_pred, y_test)[0]
-        print("Test results: test loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}"
-              .format(test_loss, SROCC, KROCC, PLCC, RMSE))
+        print(
+            "Test results: test loss={:.4f}, SROCC={:.4f}, KROCC={:.4f}, PLCC={:.4f}, RMSE={:.4f}".format(
+                test_loss, SROCC, KROCC, PLCC, RMSE
+            )
+        )
         np.save(save_result_file, (y_pred, y_test, test_loss, SROCC, KROCC, PLCC, RMSE, test_index))

@@ -11,9 +11,9 @@ import torch.backends.cudnn as cudnn
 def weight_init(m):
     if isinstance(m, nn.Linear):
         size = m.weight.size()
-        fan_out = size[0] # number of rows
-        fan_in = size[1] # number of columns
-        variance = np.sqrt(2.0/(fan_in + fan_out))
+        fan_out = size[0]  # number of rows
+        fan_in = size[1]  # number of columns
+        variance = np.sqrt(2.0 / (fan_in + fan_out))
         m.weight.data.normal_(0.0, variance)
 
 
@@ -46,8 +46,7 @@ class FeatureMode(object):
         print("=> loading checkpoint '{}'".format(f))
         checkpoint = torch.load(f)
         self.model.load_state_dict(checkpoint['state_dict'])
-        print("=> loaded checkpoint '{}' (epoch {})"
-              .format(f, checkpoint['epoch']))
+        print("=> loaded checkpoint '{}' (epoch {})".format(f, checkpoint['epoch']))
         cudnn.benchmark = True
 
         mod = list(self.model.classifier.children())

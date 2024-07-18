@@ -11,8 +11,7 @@ from niqe import niqe
 from piqe import piqe
 
 parser = argparse.ArgumentParser('Test an image')
-parser.add_argument(
-    '--mode', choices=['brisque', 'niqe', 'piqe'], help='iqa algorithoms,brisque or niqe or piqe')
+parser.add_argument('--mode', choices=['brisque', 'niqe', 'piqe'], help='iqa algorithoms,brisque or niqe or piqe')
 parser.add_argument('--path', required=True, help='image path')
 args = parser.parse_args()
 

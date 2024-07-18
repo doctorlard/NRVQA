@@ -27,7 +27,7 @@ def gaussian_kernel2d(kernel_size: int, sigma: float, dtype=tf.float32) -> tf.Te
     constant = tf.cast(tf.round(kernel_size / 2), dtype=dtype)
     x = tf.cast(x, dtype=dtype) - constant
     y = tf.cast(y, dtype=dtype) - constant
-    kernel = 1 / (2 * math.pi * sigma ** 2) * tf.exp(-(x ** 2 + y ** 2) / (2 * sigma ** 2))
+    kernel = 1 / (2 * math.pi * sigma**2) * tf.exp(-(x**2 + y**2) / (2 * sigma**2))
     return normalize_kernel(kernel)
 
 

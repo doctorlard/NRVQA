@@ -69,7 +69,7 @@ class AsymmetricGeneralizedGaussian:
 
     @property
     def R_hat(self):
-        return self.r_hat * (self.gamma ** 3 + 1) * (self.gamma + 1) / (self.gamma ** 2 + 1) ** 2
+        return self.r_hat * (self.gamma**3 + 1) * (self.gamma + 1) / (self.gamma**2 + 1) ** 2
 
     @property
     def constant(self):
@@ -77,8 +77,11 @@ class AsymmetricGeneralizedGaussian:
 
     @property
     def mean(self):
-        return (self.sigma_right - self.sigma_left) * self.constant * (
-                scipy.special.gamma(2 / self.alpha) / scipy.special.gamma(1 / self.alpha))
+        return (
+            (self.sigma_right - self.sigma_left)
+            * self.constant
+            * (scipy.special.gamma(2 / self.alpha) / scipy.special.gamma(1 / self.alpha))
+        )
 
     @property
     def alpha(self):
@@ -92,8 +95,7 @@ class AsymmetricGeneralizedGaussian:
 
     @staticmethod
     def phi(alpha):
-        return (scipy.special.gamma(2 / alpha) ** 2 /
-                (scipy.special.gamma(1 / alpha) * scipy.special.gamma(3 / alpha)))
+        return scipy.special.gamma(2 / alpha) ** 2 / (scipy.special.gamma(1 / alpha) * scipy.special.gamma(3 / alpha))
 
     def estimate_alpha(self, x0: float = 0.2) -> float:
         try:
@@ -114,5 +116,5 @@ def normalize_kernel(kernel: numpy.ndarray) -> numpy.ndarray:
 
 def gaussian_kernel2d(kernel_size, sigma: float):
     y, x = numpy.indices((kernel_size, kernel_size)) - int(kernel_size / 2)
-    kernel = 1 / (2 * numpy.pi * sigma ** 2) * numpy.exp(-(x ** 2 + y ** 2) / (2 * sigma ** 2))
+    kernel = 1 / (2 * numpy.pi * sigma**2) * numpy.exp(-(x**2 + y**2) / (2 * sigma**2))
     return normalize_kernel(kernel)

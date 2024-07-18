@@ -28,12 +28,11 @@ videopath = args.videopath
 def image_preprocess(image: tf.Tensor) -> tf.Tensor:
     image = tf.cast(image, tf.float32)
     image = tf.image.rgb_to_grayscale(image)
-    image_low = gaussian_filter(image, 16, 7/6)
-    image_low = rescale(image_low, 1/4, method=tf.image.ResizeMethod.BICUBIC)
-    image_low = tf.image.resize(image_low, size=image_shape(
-        image), method=tf.image.ResizeMethod.BICUBIC)
+    image_low = gaussian_filter(image, 16, 7 / 6)
+    image_low = rescale(image_low, 1 / 4, method=tf.image.ResizeMethod.BICUBIC)
+    image_low = tf.image.resize(image_low, size=image_shape(image), method=tf.image.ResizeMethod.BICUBIC)
 
-    return image-tf.cast(image_low, image.dtype)
+    return image - tf.cast(image_low, image.dtype)
 
 
 # input = tf.keras.Input(shape=(None, None, 1),
@@ -70,12 +69,12 @@ infer = subjective_error_model.signatures['serving_default']
 cap = cv2.VideoCapture(videopath)
 i = 0
 values = []
-while(1):
+while 1:
     ret, frame = cap.read()
     if frame is None:
         print("end")
         break
-    i = i+1
+    i = i + 1
     if i % 10 != 0:
         continue
     frame = np.expand_dims(frame, axis=0)

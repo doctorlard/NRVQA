@@ -42,7 +42,7 @@ def img_dataset(feature_model):
 
     normalize = get_imagenet_normalize()
     img_transform = transforms.Compose([transforms.ToTensor(), normalize])
-    #img_num = 1169
+    # img_num = 1169
     img_num = mos.shape[1]
     idx_arry = np.arange(0, img_num)
     np.random.shuffle(idx_arry)
@@ -95,12 +95,15 @@ def main():
     print('------------')
     print('training svr model ......')
 
-    parameters = {"C": [1e1, 1e2, 1e3], "gamma": [0.00025, 0.00020, 0.00015, 0.00010],
-                  "epsilon": [100.0, 10.0, 1.0, 0.1, 0.01, 0.001]}
+    parameters = {
+        "C": [1e1, 1e2, 1e3],
+        "gamma": [0.00025, 0.00020, 0.00015, 0.00010],
+        "epsilon": [100.0, 10.0, 1.0, 0.1, 0.01, 0.001],
+    }
     clf = GridSearchCV(SVR(kernel='rbf', gamma=0.1, epsilon=0.01), cv=5, param_grid=parameters, n_jobs=10)
     clf.fit(X_train, y_train)
 
-    #best score
+    # best score
     print("Best score: %0.3f" % clf.best_score_)
     print("Best parameters set:")
     best_parameters = clf.best_estimator_.get_params()
@@ -116,7 +119,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-

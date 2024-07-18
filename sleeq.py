@@ -10,9 +10,9 @@ from matplotlib import pyplot as plt
 from scipy import signal, special
 
 
-class sleeqQA():
+class sleeqQA:
     '''
-    sleeq,a new fully blind video  quality assessment method 
+    sleeq,a new fully blind video  quality assessment method
     Paper:A No-Reference Video Quality Predictor For Compression And Scaling Artifacts
     '''
 
@@ -24,7 +24,7 @@ class sleeqQA():
 
     def sleeq_video(self, filename):
         '''
-        evaluate score of a video 
+        evaluate score of a video
         '''
         cap = cv2.VideoCapture(filename)
         scores = []
@@ -41,7 +41,7 @@ class sleeqQA():
                 first = False
                 Y = nextY
                 continue
-            Ydiff = nextY-Y  # ?????
+            Ydiff = nextY - Y  # ?????
             frame_scores, frame_weights = self.sleeq(Y, Ydiff)
             scores.extend(frame_scores)
             weights.extend(frame_weights)
@@ -54,18 +54,16 @@ class sleeqQA():
     def sleeq(self, frame, framediff):
         h, w = frame.shape
         psize = self.patch_size
-        N = w//psize
-        M = h//psize
+        N = w // psize
+        M = h // psize
 
         scores = []
         weights = []
 
         for x in range(N):
             for y in range(M):
-                patch = frame[y*psize:(y+1)*psize,
-                              x*psize:(x+1)*psize]
-                patchdiff = framediff[y*psize:(y+1) *
-                                      psize, x*psize:(x+1)*psize]
+                patch = frame[y * psize : (y + 1) * psize, x * psize : (x + 1) * psize]
+                patchdiff = framediff[y * psize : (y + 1) * psize, x * psize : (x + 1) * psize]
                 patchQ, weight = self.__get_Q_weight(patch, patchdiff)
 
                 scores.append(patchQ)
@@ -78,11 +76,10 @@ class sleeqQA():
         res = sorted(res)
         scores_order = list(zip(*res))[1]
 
-        return np.mean(scores_order[int(self.n_threshold*len(scores_order)):])
+        return np.mean(scores_order[int(self.n_threshold * len(scores_order)) :])
 
     def __get_alpha_sigma(self, patch):
-        patch_blur = cv2.GaussianBlur(
-            patch, (self.ksize, self.ksize), self.Bsigma)
+        patch_blur = cv2.GaussianBlur(patch, (self.ksize, self.ksize), self.Bsigma)
 
         mscn, var = self.__calculate_mscn_coefficients(patch)
         alpha = self.__ggd_features(mscn)
@@ -91,50 +88,49 @@ class sleeqQA():
         alpha_blur = self.__ggd_features(mscn_blur)
 
         # return score and weight
-        return abs(alpha-alpha_blur), abs(var-var_blur)
+        return abs(alpha - alpha_blur), abs(var - var_blur)
 
     def __get_Q_weight(self, patch, patchdiff):
         # mp = np.abs(np.mean(patchdiff/255.0))
-        mp = np.mean(np.abs(patchdiff)/255.0)  # ??
+        mp = np.mean(np.abs(patchdiff) / 255.0)  # ??
         alpha_s, delta_var = self.__get_alpha_sigma(patch)
         if mp < 0.001:
             return alpha_s, delta_var
         alpha_t, _ = self.__get_alpha_sigma(patchdiff)
-        Q = (1-mp)*alpha_s+mp*alpha_t
+        Q = (1 - mp) * alpha_s + mp * alpha_t
 
         return Q, delta_var
 
     def __ggd_features(self, mscn):
         '''
-            Paper:Estimation of Shape Parameter for Generalized Gaussian Distributions in Subband Decompositions of Video
+        Paper:Estimation of Shape Parameter for Generalized Gaussian Distributions in Subband Decompositions of Video
         '''
         gamma_range = np.arange(0.2, 10, 0.001)
-        a = special.gamma(2.0/gamma_range)
+        a = special.gamma(2.0 / gamma_range)
         a *= a
-        b = special.gamma(1.0/gamma_range)
-        c = special.gamma(3.0/gamma_range)
-        prec_gammas = a/(b*c)
+        b = special.gamma(1.0 / gamma_range)
+        c = special.gamma(3.0 / gamma_range)
+        prec_gammas = a / (b * c)
 
-        nr_gam = 1/prec_gammas
+        nr_gam = 1 / prec_gammas
         sigma = np.var(mscn)
         E = np.mean(np.abs(mscn))
         # if(E == 0):
         #     import pdb
         #     pdb.set_trace()
-        rho = sigma/E**2
+        rho = sigma / E**2
         pos = np.argmin(np.abs(nr_gam - rho))
 
         return gamma_range[pos]  # GGD model alpha parameter to decide shape
 
     def __calculate_mscn_coefficients(self, dis_image):
         dis_image = dis_image.astype(np.float32)
-        ux = cv2.GaussianBlur(dis_image, (7, 7), 7/6)
-        ux_sq = ux*ux
-        sigma = np.sqrt(np.abs(cv2.GaussianBlur(
-            dis_image**2, (7, 7), 7/6)-ux_sq))
+        ux = cv2.GaussianBlur(dis_image, (7, 7), 7 / 6)
+        ux_sq = ux * ux
+        sigma = np.sqrt(np.abs(cv2.GaussianBlur(dis_image**2, (7, 7), 7 / 6) - ux_sq))
         # sigma = np.sqrt(np.abs(cv2.GaussianBlur(
         #     (dis_image-ux)**2, (7, 7), 7/6)))
-        mscn = (dis_image-ux)/(1+sigma)
+        mscn = (dis_image - ux) / (1 + sigma)
 
         return mscn, np.mean(sigma)
 

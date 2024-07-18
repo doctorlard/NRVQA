@@ -37,11 +37,13 @@ class Tid2013(tfds.core.GeneratorBasedBuilder):
         return tfds.core.DatasetInfo(
             builder=self,
             description=DESCRIPTION,
-            features=tfds.features.FeaturesDict({
-                "distorted_image": tfds.features.Image(),
-                "reference_image": tfds.features.Image(),
-                "mos": tf.float32,
-            }),
+            features=tfds.features.FeaturesDict(
+                {
+                    "distorted_image": tfds.features.Image(),
+                    "reference_image": tfds.features.Image(),
+                    "mos": tf.float32,
+                }
+            ),
             supervised_keys=SUPERVISED_KEYS,
             urls=URLS,
             citation=CITATION,
@@ -55,10 +57,7 @@ class Tid2013(tfds.core.GeneratorBasedBuilder):
         return [
             tfds.core.SplitGenerator(
                 name=tfds.Split.TRAIN,
-                gen_kwargs={
-                    "images_path": images_path,
-                    "labels": os.path.join(images_path, "mos.csv")
-                },
+                gen_kwargs={"images_path": images_path, "labels": os.path.join(images_path, "mos.csv")},
             )
         ]
 

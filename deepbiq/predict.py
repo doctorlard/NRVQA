@@ -50,8 +50,7 @@ def load_feature(feature_model, imgpath):
     crop_out = None
     img = cv2.imread(imgpath)
     img_w, img_h = img.shape[1], img.shape[0]
-    crop_box = get_crop_box(
-        img_w, img_h, crop_w, crop_h, crop_num_w, crop_num_h)
+    crop_box = get_crop_box(img_w, img_h, crop_w, crop_h, crop_num_w, crop_num_h)
     for box in crop_box:
         w, h, w2, h2 = box
         w = int(w)
@@ -59,8 +58,7 @@ def load_feature(feature_model, imgpath):
         w2 = int(w2)
         h2 = int(h2)
         part = img[h:h2, w:w2]
-        crop_imgs = np.append(
-            crop_imgs, img_transform(part))
+        crop_imgs = np.append(crop_imgs, img_transform(part))
     crop_imgs = crop_imgs.reshape(crop_num_w * crop_num_h, 3, 224, 224)
     crop_imgs = torch.from_numpy(crop_imgs).float()
     crop_out = feature_model.extract_feature(crop_imgs)

@@ -1,8 +1,9 @@
 """Extracting Content-Aware Perceptual Features using Pre-Trained ResNet-50"""
+
 # Author: Dingquan Li
 # Email: dingquanli AT pku DOT edu DOT cn
 # Date: 2018/3/27
-# 
+#
 # CUDA_VISIBLE_DEVICES=0 python CNNfeatures.py --database=KoNViD-1k --frame_batch_size=64
 # CUDA_VISIBLE_DEVICES=1 python CNNfeatures.py --database=CVD2014 --frame_batch_size=32
 # CUDA_VISIBLE_DEVICES=0 python CNNfeatures.py --database=LIVE-Qualcomm --frame_batch_size=8
@@ -22,6 +23,7 @@ from argparse import ArgumentParser
 
 class VideoDataset(Dataset):
     """Read data from the original dataset for feature extraction"""
+
     def __init__(self, videos_dir, video_names, score, video_format='RGB', width=None, height=None):
 
         super(VideoDataset, self).__init__()
@@ -39,35 +41,36 @@ class VideoDataset(Dataset):
         video_name = self.video_names[idx]
         assert self.format == 'YUV420' or self.format == 'RGB'
         if self.format == 'YUV420':
-            video_data = skvideo.io.vread(os.path.join(self.videos_dir, video_name), self.height, self.width, inputdict={'-pix_fmt':'yuvj420p'})
+            video_data = skvideo.io.vread(
+                os.path.join(self.videos_dir, video_name), self.height, self.width, inputdict={'-pix_fmt': 'yuvj420p'}
+            )
         else:
             video_data = skvideo.io.vread(os.path.join(self.videos_dir, video_name))
         video_score = self.score[idx]
 
-        transform = transforms.Compose([
-            transforms.ToTensor(),
-            transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-        ])
+        transform = transforms.Compose(
+            [transforms.ToTensor(), transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])]
+        )
 
         video_length = video_data.shape[0]
         video_channel = video_data.shape[3]
         video_height = video_data.shape[1]
         video_width = video_data.shape[2]
-        transformed_video = torch.zeros([video_length, video_channel,  video_height, video_width])
+        transformed_video = torch.zeros([video_length, video_channel, video_height, video_width])
         for frame_idx in range(video_length):
             frame = video_data[frame_idx]
             frame = Image.fromarray(frame)
             frame = transform(frame)
             transformed_video[frame_idx] = frame
 
-        sample = {'video': transformed_video,
-                  'score': video_score}
+        sample = {'video': transformed_video, 'score': video_score}
 
         return sample
 
 
 class ResNet50(torch.nn.Module):
     """Modified ResNet50 for feature extraction"""
+
     def __init__(self):
         super(ResNet50, self).__init__()
         self.features = nn.Sequential(*list(models.resnet50(pretrained=True).children())[:-2])
@@ -86,8 +89,7 @@ class ResNet50(torch.nn.Module):
 
 def global_std_pool2d(x):
     """2D global standard variation pooling"""
-    return torch.std(x.view(x.size()[0], x.size()[1], -1, 1),
-                     dim=2, keepdim=True)
+    return torch.std(x.view(x.size()[0], x.size()[1], -1, 1), dim=2, keepdim=True)
 
 
 def get_features(video_data, frame_batch_size=64, device='cuda'):
@@ -100,19 +102,19 @@ def get_features(video_data, frame_batch_size=64, device='cuda'):
     output2 = torch.Tensor().to(device)
     extractor.eval()
     with torch.no_grad():
-	    while frame_end < video_length:
-	        batch = video_data[frame_start:frame_end].to(device)
-	        features_mean, features_std = extractor(batch)
-	        output1 = torch.cat((output1, features_mean), 0)
-	        output2 = torch.cat((output2, features_std), 0)
-	        frame_end += frame_batch_size
-	        frame_start += frame_batch_size
+        while frame_end < video_length:
+            batch = video_data[frame_start:frame_end].to(device)
+            features_mean, features_std = extractor(batch)
+            output1 = torch.cat((output1, features_mean), 0)
+            output2 = torch.cat((output2, features_std), 0)
+            frame_end += frame_batch_size
+            frame_start += frame_batch_size
 
-	    last_batch = video_data[frame_start:video_length].to(device)
-	    features_mean, features_std = extractor(last_batch)
-	    output1 = torch.cat((output1, features_mean), 0)
-	    output2 = torch.cat((output2, features_std), 0)
-	    output = torch.cat((output1, output2), 1).squeeze()
+        last_batch = video_data[frame_start:video_length].to(device)
+        features_mean, features_std = extractor(last_batch)
+        output1 = torch.cat((output1, features_mean), 0)
+        output2 = torch.cat((output2, features_std), 0)
+        output = torch.cat((output1, output2), 1).squeeze()
 
     return output
 
@@ -120,13 +122,12 @@ def get_features(video_data, frame_batch_size=64, device='cuda'):
 if __name__ == "__main__":
     parser = ArgumentParser(description='"Extracting Content-Aware Perceptual Features using Pre-Trained ResNet-50')
     parser.add_argument("--seed", type=int, default=19920517)
-    parser.add_argument('--database', default='KoNViD-1k', type=str,
-                        help='database name (default: KoNViD-1k)')
-    parser.add_argument('--frame_batch_size', type=int, default=64,
-                        help='frame batch size for feature extraction (default: 64)')
+    parser.add_argument('--database', default='KoNViD-1k', type=str, help='database name (default: KoNViD-1k)')
+    parser.add_argument(
+        '--frame_batch_size', type=int, default=64, help='frame batch size for feature extraction (default: 64)'
+    )
 
-    parser.add_argument('--disable_gpu', action='store_true',
-                        help='flag whether to disable GPU')
+    parser.add_argument('--disable_gpu', action='store_true', help='flag whether to disable GPU')
     args = parser.parse_args()
 
     torch.manual_seed(args.seed)  #
@@ -156,7 +157,9 @@ if __name__ == "__main__":
     device = torch.device("cuda" if not args.disable_gpu and torch.cuda.is_available() else "cpu")
 
     Info = h5py.File(datainfo, 'r')
-    video_names = [Info[Info['video_names'][0, :][i]][()].tobytes()[::2].decode() for i in range(len(Info['video_names'][0, :]))]
+    video_names = [
+        Info[Info['video_names'][0, :][i]][()].tobytes()[::2].decode() for i in range(len(Info['video_names'][0, :]))
+    ]
     scores = Info['scores'][0, :]
     video_format = Info['video_format'][()].tobytes()[::2].decode()
     width = int(Info['width'][0])

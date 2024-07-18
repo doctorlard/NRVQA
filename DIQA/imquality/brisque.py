@@ -35,11 +35,7 @@ class Brisque:
     _mscn = None
     _features = None
 
-    def __init__(
-            self,
-            image: typing.Union[PIL.Image.Image, numpy.ndarray],
-            kernel_size: int = 7,
-            sigma: float = 7 / 6):
+    def __init__(self, image: typing.Union[PIL.Image.Image, numpy.ndarray], kernel_size: int = 7, sigma: float = 7 / 6):
         self.image = pil2ndarray(image)
         self.image = skimage.color.rgb2gray(self.image)
         self.kernel_size = kernel_size
@@ -93,7 +89,7 @@ class Brisque:
             MscnType.horizontal: self.mscn_horizontal,
             MscnType.vertical: self.mscn_vertical,
             MscnType.main_diagonal: self.mscn_diagonal,
-            MscnType.secondary_diagonal: self.mscn_secondary_diagonal
+            MscnType.secondary_diagonal: self.mscn_secondary_diagonal,
         }
         return coefficients[mscn_type]
 
@@ -120,11 +116,8 @@ def calculate_features(image: PIL.Image, kernel_size, sigma) -> numpy.ndarray:
     with warnings.catch_warnings():
         warnings.simplefilter("ignore")
         downscaled_image = skimage.transform.rescale(
-            brisque.image, 1 / 2,
-            order=2,
-            mode='constant',
-            anti_aliasing=False,
-            multichannel=False)
+            brisque.image, 1 / 2, order=2, mode='constant', anti_aliasing=False, multichannel=False
+        )
     downscaled_brisque = Brisque(downscaled_image, kernel_size=kernel_size, sigma=sigma)
     features = numpy.concatenate([brisque.features, downscaled_brisque.features])
     scaled_features = scale_features(features)

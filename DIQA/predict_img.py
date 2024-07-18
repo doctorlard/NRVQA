@@ -28,12 +28,11 @@ imgpath = args.imgpath
 def image_preprocess(image: tf.Tensor) -> tf.Tensor:
     image = tf.cast(image, tf.float32)
     image = tf.image.rgb_to_grayscale(image)
-    image_low = gaussian_filter(image, 16, 7/6)
-    image_low = rescale(image_low, 1/4, method=tf.image.ResizeMethod.BICUBIC)
-    image_low = tf.image.resize(image_low, size=image_shape(
-        image), method=tf.image.ResizeMethod.BICUBIC)
+    image_low = gaussian_filter(image, 16, 7 / 6)
+    image_low = rescale(image_low, 1 / 4, method=tf.image.ResizeMethod.BICUBIC)
+    image_low = tf.image.resize(image_low, size=image_shape(image), method=tf.image.ResizeMethod.BICUBIC)
 
-    return image-tf.cast(image_low, image.dtype)
+    return image - tf.cast(image_low, image.dtype)
 
 
 # input = tf.keras.Input(shape=(None, None, 1),

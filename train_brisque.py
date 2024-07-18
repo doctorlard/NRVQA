@@ -34,29 +34,25 @@ for f in tqdm(files):
     X.append(brisque(im))
     y.append(score)
 end = time.time()
-print("load data elapsed:{:.2}".format(end-begin))
+print("load data elapsed:{:.2}".format(end - begin))
 
 
 X = np.array(X)
 y = np.array(y)
 print(X.shape)
 
-train_x, test_x, train_y, test_y = train_test_split(
-    X, y, test_size=0.05, random_state=42)
+train_x, test_x, train_y, test_y = train_test_split(X, y, test_size=0.05, random_state=42)
 
 print("begin training...")
 begin = time.time()
 param_grid = [
-    {'C': [1, 10, 100], 'gamma': [
-        0.01, 0.001, 0.0001], 'kernel': ['rbf']},
+    {'C': [1, 10, 100], 'gamma': [0.01, 0.001, 0.0001], 'kernel': ['rbf']},
 ]
-clf = GridSearchCV(
-    SVR(), param_grid, scoring='neg_mean_squared_error'
-)
+clf = GridSearchCV(SVR(), param_grid, scoring='neg_mean_squared_error')
 # clf = SVR()
 clf.fit(train_x, train_y)
 end = time.time()
-print("training elapsed:{:.2}".format(end-begin))
+print("training elapsed:{:.2}".format(end - begin))
 
 print("begin test...")
 # clf = load('svr_brisque.joblib')
